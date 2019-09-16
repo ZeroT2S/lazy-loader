@@ -21,14 +21,70 @@ based on <https://github.com/Euiyeon/ts-lib-webpack-starter.git>
 
 ### continuous integration
 
-* [ ] [Codacy](https://www.codacy.com) - Automated code reviews & code analytics
-* [ ] [CircleCI](https://circleci.com) - Continuous Integration and Delivery
-* [ ] [codecov](https://codecov.io) - leading, dedicated code coverage
-* [ ] [snyk.io](https://snyk.io) - Continuously find and fix vulnerabilities for npm
+* [Codacy](https://www.codacy.com) - Automated code reviews & code analytics
+* [CircleCI](https://circleci.com) - Continuous Integration and Delivery
+* [codecov](https://codecov.io) - leading, dedicated code coverage
+* [snyk.io](https://snyk.io) - Continuously find and fix vulnerabilities for npm
+
+## development
+
+run webpack-dev-server `localhost:3033` 
+
+```
+yarn serve
+```
+
+### build
+
+```
+yarn build
+```
+
+### publish
+
+```
+yarn build
+yarn release
+npm link
+npm publish --access public
+```
+
+### document
+
+API Document: <https://zerot2s.github.io/lazy-loader/>
+
+* generate: `yarn doc`
+* publish: `yarn doc:publish`
 
 ## todo
-* [ ] ..
-    
+
+* function
+  * loader instnace
+    * [ ] create options
+    * [ ] set/get config
+  * [ ] load
+  * [ ] reload
+  * [ ] unload
+  * events(on)
+    * [ ] loaded
+    * [ ] unloaded
+  * imported library custom api
+    * [ ] create
+    * instance
+      * [ ] length
+      * [ ] get
+      * [ ] getIndexById
+      * [ ] getIdByIndex
+      * [ ] getList
+      * [ ] removeById
+      * [ ] removeByIndex
+      * [ ] removeAll
+* git integration
+  * [ ] Codacy
+  * [ ] CircleCI
+  * [ ] codecov
+  * [ ] snyk.io
+
 ## license
 
 [MIT](./LICENSE)

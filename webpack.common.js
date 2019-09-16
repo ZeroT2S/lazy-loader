@@ -2,12 +2,15 @@ const webpack = require('webpack')
 const { resolve: pathResolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const pkg = require('./package.json')
-const { get, camelCase } = require('lodash')
-
-const LIBRARY_NAME = get(pkg, 'libraryName', 'custom-lib')
+const { get } = require('lodash')
 
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProd = nodeEnv === 'production'
+
+const {
+  filename: OUTPUT_FILE,
+  global: GLOBAL_NAME
+} = get(pkg, 'jslib')
 
 const {
   DefinePlugin,
@@ -63,8 +66,8 @@ var config = {
   },
   output: {
     path: pathResolve('./dist/umd'),
-    filename: `${LIBRARY_NAME}.js`,
-    library: camelCase(LIBRARY_NAME),
+    filename: `${OUTPUT_FILE}.js`,
+    library: GLOBAL_NAME,
     libraryTarget: 'umd'
   },
   node: {
