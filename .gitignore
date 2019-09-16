@@ -3,6 +3,7 @@ test
 src/**.js
 .idea/*
 tree.txt
+package
 package-lock.json
 dist
 
