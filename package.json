@@ -1,7 +1,7 @@
 {
   "name": "@zerot2s/lazy-loader",
   "libraryName": "lazy-loader",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Dynamically lazy loading javascript or stylesheets",
   "main": "index.js",
   "typings": "index.d.ts",
