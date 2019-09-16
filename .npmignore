@@ -24,3 +24,4 @@ tsconfig.json
 tslint.json
 tslint.yaml
 webpack.*.js
+yarn.lock
