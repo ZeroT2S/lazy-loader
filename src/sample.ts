@@ -1,5 +1,6 @@
-import { LazyLoaderStatic } from './index.d'
-import { get } from 'lodash-es'
+// tslint:disable:no-expression-statement
+import { LazyLoaderStatic } from './lib'
+import get from 'lodash/get'
 
 // document ready
 $(():void => {
@@ -8,6 +9,4 @@ $(():void => {
   const loader: LazyLoaderStatic = new LazyLoader()
 
   console.log('* LazyLoader:', `v${loader.version}`)
-  console.log('* LazyLoader test double:', loader.double(3))
-  console.log('* LazyLoader test power:', loader.power(3, 3))
 })

@@ -106,9 +106,7 @@
     "webpack-dev-server": "^3.8.0",
     "webpack-merge": "^4.2.2"
   },
-  "dependencies": {
-    "lodash-es": "^4.17.15"
-  },
+  "dependencies": {},
   "sideEffects": false,
   "prettier": {
     "tabWidth": 2,

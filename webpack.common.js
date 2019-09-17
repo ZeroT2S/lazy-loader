@@ -77,8 +77,8 @@ const config = {
   output: {
     path: pathResolve(__dirname, './dist/umd'),
     publicPath: '/',
-    filename: '[name].js',
-    chunkFilename: '[id].chunk.js'
+    filename: '[name].js'
+    // chunkFilename: '[id].chunk.js'
     // library: GLOBAL_NAME,
     // libraryTarget: 'umd',
     // libraryExport: OUTPUT_FILE
@@ -103,10 +103,15 @@ const config = {
   plugins,
   optimization: {
     minimize: isProd,
-    providedExports: true,
+    // providedExports: true,
     splitChunks: {
-      name: 'common',
+      name: 'shared/common',
       chunks: 'all'
+      // cacheGroups: {
+      //   vendors: {
+      //     filename: 'shared/[name].bundle.js'
+      //   }
+      // }
     }
   }
 }
