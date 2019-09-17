@@ -1,31 +1,40 @@
 const webpack = require('webpack')
 const { resolve: pathResolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const pkg = require('./package.json')
 const { get } = require('lodash')
+
+const pkg = require('./package.json')
 
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProd = nodeEnv === 'production'
 
 const {
-  filename: OUTPUT_FILE,
-  global: GLOBAL_NAME
-} = get(pkg, 'jslib')
+  filename: OUTPUT_FILE
+  // global: GLOBAL_NAME
+} = get(pkg, 'jslib', {
+  filename: 'custom-lib',
+  global: 'CustomLib'
+})
 
 const {
   DefinePlugin,
+  // ProvidePlugin,
   LoaderOptionsPlugin
 } = webpack
 
 const plugins = [
+  // new ProvidePlugin({
+  //   $: 'jquery'
+  // }),
   new DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify(nodeEnv)
-    }
+    },
+    APP_VERSION: JSON.stringify(pkg.version)
   }),
   // https://github.com/jantimon/html-webpack-plugin
   new HtmlWebpackPlugin({
-    title: 'Typescript Webpack Starter',
+    title: 'LazyLoader Sample',
     template: 'index.hbs'
   }),
   new LoaderOptionsPlugin({
@@ -59,16 +68,22 @@ const rules = [
   { test: /\.css$/, loaders: ['style-loader', 'css-loader'] }
 ]
 
-var config = {
-  context: pathResolve('./src'),
+const config = {
+  context: pathResolve(__dirname, './src'),
   entry: {
-    main: './index.ts'
+    [OUTPUT_FILE]: './index.ts',
+    sample: './sample.ts'
   },
   output: {
-    path: pathResolve('./dist/umd'),
-    filename: `${OUTPUT_FILE}.js`,
-    library: GLOBAL_NAME,
-    libraryTarget: 'umd'
+    path: pathResolve(__dirname, './dist/umd'),
+    publicPath: '/',
+    filename: '[name].js',
+    chunkFilename: '[id].chunk.js'
+    // library: GLOBAL_NAME,
+    // libraryTarget: 'umd',
+    // libraryExport: OUTPUT_FILE
+    // umdNamedDefine: true
+    // globalObject: 'typeof self !== "undefined" ? self : this'
   },
   node: {
     process: false
@@ -77,11 +92,22 @@ var config = {
     rules: rules.filter(Boolean)
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+    modules: [
+      'node_modules'
+    ]
+    // alias: {
+    //   jquery: 'jquery/dist/jquery.slim.min.js'
+    // }
   },
   plugins,
   optimization: {
-    minimize: isProd
+    minimize: isProd,
+    providedExports: true,
+    splitChunks: {
+      name: 'common',
+      chunks: 'all'
+    }
   }
 }
 

@@ -25,10 +25,15 @@ module.exports = merge(common, {
     // compress: true,
     port: 3033,
     inline: true,
-    hot: true
-  },
-  watchOptions: {
-    aggregateTimeout: 300 /* delay before rebuilding once the first file changed */,
-    poll: 1000 /* Check for changes every second */
+    hot: true,
+    open: false,
+    watchOptions: {
+      aggregateTimeout: 300 /* delay before rebuilding once the first file changed */,
+      poll: 1000 /* Check for changes every second */,
+      ignored: [
+        'node_modules',
+        'dist'
+      ]
+    }
   }
 })
