@@ -1,6 +1,6 @@
 import { double, power } from './lib/number'
 import { version } from './lib/version'
-import { LazyLoaderStatic } from './interface'
+import { LazyLoaderStatic } from './index.d'
 import { set } from 'lodash-es'
 
 class LazyLoader implements LazyLoaderStatic {
@@ -14,6 +14,9 @@ class LazyLoader implements LazyLoaderStatic {
   power: (base: number, exponent: number) => number
 }
 
+/**
+ * @hidden
+ */
 const fn = LazyLoader.prototype
 
 fn.double = double
