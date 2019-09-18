@@ -1,10 +1,25 @@
 import { double, power } from './number'
 import PkgVersion from './version'
-import { LazyLoaderStatic } from './main.interface'
-import { set } from 'lodash-es'
+import { IRegistry } from './registry'
+import {
+  ILazyLoaderOptions,
+  ILazyLoaderStatic
+} from './interface'
+import {
+  get, set,
+  isNil
+} from './shared/lodash'
+import { EventEmitter } from 'events'
 
-class LazyLoader implements LazyLoaderStatic {
-  constructor() {
+/**
+ * global object
+ */
+class LazyLoader extends EventEmitter implements ILazyLoaderStatic {
+  registry: IRegistry
+  constructor(options?: ILazyLoaderOptions) {
+    super()
+    const regList = get(options, 'registry')
+    this.registry = new
     return this
   }
   get version(): string {
@@ -22,7 +37,7 @@ const fn = LazyLoader.prototype
 fn.double = double
 fn.power = power
 
-// set global(window) variable
+// set global variable
 set(window, 'LazyLoader', LazyLoader)
 
 export default LazyLoader

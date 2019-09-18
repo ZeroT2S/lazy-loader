@@ -1,5 +1,5 @@
-import { LazyLoaderStatic } from './lib/main.interface'
+import { ILazyLoaderStatic } from './lib/interface'
 
-declare const LazyLoader: LazyLoaderStatic
+declare const LazyLoader: ILazyLoaderStatic
 
 export default LazyLoader
