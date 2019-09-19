@@ -1,35 +1,49 @@
-import { IRegistry, IRegistryItem } from './registry'
+import {
+  ILoaderRegistry,
+  ILoaderRegistryItemData,
+  ILoaderRegistryAddData
+} from './registry'
+
+export type ILazyLoadParam = string | string[] | ILoaderRegistryAddData
 
 export interface ILazyLoaderOptions {
-  registry?: IRegistryItem[],
-  load: string | IRegistryItem
+  registry?: string[] | ILoaderRegistryItemData[]
+  ready?: Function
+  load?: ILazyLoadParam
 }
 
 export enum LazyLoaderEvent {
-  READY='ready',
-  LOAD='load',
-  LOAD_ERROR='load-error',
-  LOADED='loaded',
-  CREATE='create',
-  CREATE_ERROR='create-error',
-  CREATED='created',
-  REMOVE='remove',
-  REMOVE_ERROR='remove-error',
-  REMOVED='removed',
-  UNLOAD='unload',
-  UNLOADED='unloaded'
+  READY = 'ready',
+  LOAD = 'load',
+  LOAD_ERROR = 'load-error',
+  LOADED = 'loaded',
+  CREATE = 'create',
+  CREATE_ERROR = 'create-error',
+  CREATED = 'created',
+  REMOVE = 'remove',
+  REMOVE_ERROR = 'remove-error',
+  REMOVED = 'removed',
+  UNLOAD = 'unload',
+  UNLOADED = 'unloaded'
+}
+
+export enum LazyLoaderStatus {
+  IDLE,
+  LOAD,
+  LOADING,
+  LOADED
 }
 
 export interface ILazyLoaderStatic {
-  constructor: (param?: string | string[] | ILazyLoaderOptions) => this
-  registry: IRegistry
+  registry: ILoaderRegistry
   // setConfig: (key: string, value: any) => void
   // getConfig: (key: string) => any
-  load: (param?: string|ILazyLoaderOptions) => this
-  readonly loaded: boolean,
-  reload: () => this
-  unload: () => this
-  reset: () => this
+  load(param?: ILazyLoadParam): ILazyLoaderStatic
+  readonly ready: boolean
+  readonly status: LazyLoaderStatus
+  reload(): ILazyLoaderStatic
+  unload(): ILazyLoaderStatic
+  reset(): ILazyLoaderStatic
   // create
   // get
   // getIndexById
@@ -38,6 +52,5 @@ export interface ILazyLoaderStatic {
   // removeById
   // removeByIndex
   // removeAll
-  on: (name: LazyLoaderEvent, callback: Function) => this
   version: string
 }

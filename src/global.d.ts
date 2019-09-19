@@ -1,4 +1,3 @@
 /**
- * for webpack remark app version
+ * global declaration
  */
-declare const APP_VERSION: string

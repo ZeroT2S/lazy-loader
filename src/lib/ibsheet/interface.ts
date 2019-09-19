@@ -1,6 +1,4 @@
-export interface IBSheetCreateOptions {
-
-}
+export interface IBSheetCreateOptions {}
 
 export interface IBSheetStatic {
   create: (options: IBSheetCreateOptions) => void

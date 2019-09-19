@@ -1,23 +1,37 @@
-export interface IRegistryAliasData {
+export interface ILoaderRegistryAliasData {
   name: string
-  version: string
+  version?: string
 }
 
-export interface IRegistryItem {
-  id?: number
+export interface ILoaderRegistryItemUpdateData {
   name?: string
-  version?: string
+  version?: string | null
+  url?: string
+}
+
+export interface ILoaderRegistryItemData extends ILoaderRegistryItemUpdateData {
   url: string
 }
 
-export type IRegistryAddParam = IRegistryItem|IRegistryItem[]
+export interface ILoaderRegistryItem {
+  readonly id: string
+  name: string
+  version: string | null
+  readonly alias: string
+  url: string
+}
 
-export interface IRegistry {
-  constructor: (param?: IRegistryAddParam) => this
-  add: (param: IRegistryAddParam) => this
-  remove: (key: string) => boolean
-  list: () => string[]
+export type ILoaderRegistryAddData =
+  | ILoaderRegistryItemData
+  | ILoaderRegistryItemData[]
+
+export interface ILoaderRegistry {
+  add(params: string | string[] | ILoaderRegistryAddData): ILoaderRegistry
+  remove(alias: string): ILoaderRegistryItem | ILoaderRegistryItem[] | void
+  list(): string[]
   readonly length: number
-  getItem: (key: string) => IRegistryItem | null
-  setItem: (key: string, value: IRegistryItem) => void
+  get(alias: string): ILoaderRegistryItem | null
+  getAll(alias: string): ILoaderRegistryItem[] | []
+  getIndexByAlias(alias: string): number
+  update(alias: string, data: ILoaderRegistryItemUpdateData): void
 }

@@ -29,8 +29,7 @@ const plugins = [
   new DefinePlugin({
     'process.env': {
       NODE_ENV: JSON.stringify(nodeEnv)
-    },
-    APP_VERSION: JSON.stringify(pkg.version)
+    }
   }),
   // https://github.com/jantimon/html-webpack-plugin
   new HtmlWebpackPlugin({
@@ -48,6 +47,15 @@ const plugins = [
 ]
 
 const rules = [
+  {
+    enforce: 'pre',
+    test: /version\.ts/,
+    loader: 'string-replace-loader',
+    options: {
+      search: '__APP_VERSION__',
+      replace: pkg.version
+    }
+  },
   {
     enforce: 'pre',
     test: /\.tsx?$/,
@@ -102,17 +110,17 @@ const config = {
   },
   plugins,
   optimization: {
-    minimize: isProd,
+    minimize: isProd
     // providedExports: true,
-    splitChunks: {
-      name: 'shared/common',
-      chunks: 'all'
-      // cacheGroups: {
-      //   vendors: {
-      //     filename: 'shared/[name].bundle.js'
-      //   }
-      // }
-    }
+    // splitChunks: {
+    //   name: 'shared/common',
+    //   chunks: 'all'
+    //   // cacheGroups: {
+    //   //   vendors: {
+    //   //     filename: 'shared/[name].bundle.js'
+    //   //   }
+    //   // }
+    // }
   }
 }
 

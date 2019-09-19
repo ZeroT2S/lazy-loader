@@ -1,2 +1,1 @@
-export { version } from './version'
-export default version
+export * from './version'
