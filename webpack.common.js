@@ -1,12 +1,16 @@
 const webpack = require('webpack')
 const { resolve: pathResolve } = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+// https://webpack.js.org/plugins/mini-css-extract-plugin/
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+// const TerserJSPlugin = require('terser-webpack-plugin')
+// const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { get } = require('lodash')
 
 const pkg = require('./package.json')
 
 const nodeEnv = process.env.NODE_ENV || 'development'
-const isProd = nodeEnv === 'production'
+const devMode = nodeEnv === 'development'
 
 const {
   filename: OUTPUT_FILE
@@ -35,6 +39,11 @@ const plugins = [
   new HtmlWebpackPlugin({
     title: 'LazyLoader Sample',
     template: 'index.hbs'
+  }),
+  new MiniCssExtractPlugin({
+    filename: `assets/${devMode ? '[name].css' : '[name].[hash].css'}`,
+    chunkFilename: `assets/${devMode ? '[id].css' : '[id].[hash].css'}`,
+    ignoreOrder: false // Enable to remove warnings about conflicting order
   }),
   new LoaderOptionsPlugin({
     options: {
@@ -73,7 +82,24 @@ const rules = [
   },
   { test: /\.html$/, loader: 'html-loader' },
   { test: /\.hbs$/, loader: 'handlebars-loader' },
-  { test: /\.css$/, loaders: ['style-loader', 'css-loader'] }
+  // { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
+  {
+    test: /\.(sa|sc|c)ss$/,
+    use: [
+      {
+        loader: MiniCssExtractPlugin.loader,
+        options: {
+          // only enable hot in development
+          hmr: devMode
+          // if hmr does not work, this is a forceful method
+          // reloadAll: true
+        }
+      },
+      'css-loader',
+      // 'postcss-loader',
+      'sass-loader'
+    ]
+  }
 ]
 
 const config = {
@@ -84,7 +110,7 @@ const config = {
   },
   output: {
     path: pathResolve(__dirname, './dist/umd'),
-    publicPath: '/',
+    // publicPath: '/',
     filename: '[name].js'
     // chunkFilename: '[id].chunk.js'
     // library: GLOBAL_NAME,
@@ -110,7 +136,11 @@ const config = {
   },
   plugins,
   optimization: {
-    minimize: isProd
+    minimize: !devMode
+    // minimizer: !devMode ? [
+    //   new TerserJSPlugin({}),
+    //   new OptimizeCSSAssetsPlugin({})
+    // ] : []
     // providedExports: true,
     // splitChunks: {
     //   name: 'shared/common',

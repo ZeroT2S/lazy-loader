@@ -1,19 +1,15 @@
 import {
   ILoaderRegistry,
-  ILoaderRegistryItemData,
-  ILoaderRegistryAddData
+  LoaderRegistryDataType
 } from './registry'
 
-export type ILazyLoadParam = string | string[] | ILoaderRegistryAddData
-
 export interface ILazyLoaderOptions {
-  registry?: string[] | ILoaderRegistryItemData[]
+  registry?: LoaderRegistryDataType[]
   ready?: Function
-  load?: ILazyLoadParam
+  load?: LoaderRegistryDataType|LoaderRegistryDataType[]
 }
 
 export enum LazyLoaderEvent {
-  READY = 'ready',
   LOAD = 'load',
   LOAD_ERROR = 'load-error',
   LOADED = 'loaded',
@@ -38,7 +34,7 @@ export interface ILazyLoaderStatic {
   registry: ILoaderRegistry
   // setConfig: (key: string, value: any) => void
   // getConfig: (key: string) => any
-  load(param?: ILazyLoadParam): ILazyLoaderStatic
+  load(param?: LoaderRegistryDataType|LoaderRegistryDataType[]): ILazyLoaderStatic
   readonly ready: boolean
   readonly status: LazyLoaderStatus
   reload(): ILazyLoaderStatic

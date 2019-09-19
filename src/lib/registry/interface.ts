@@ -7,6 +7,7 @@ export interface ILoaderRegistryItemUpdateData {
   name?: string
   version?: string | null
   url?: string
+  test?: Function
 }
 
 export interface ILoaderRegistryItemData extends ILoaderRegistryItemUpdateData {
@@ -15,22 +16,22 @@ export interface ILoaderRegistryItemData extends ILoaderRegistryItemUpdateData {
 
 export interface ILoaderRegistryItem {
   readonly id: string
+  url: string
   name: string
   version: string | null
   readonly alias: string
-  url: string
+  readonly type: string
 }
 
-export type ILoaderRegistryAddData =
-  | ILoaderRegistryItemData
-  | ILoaderRegistryItemData[]
+export type LoaderRegistryDataType = string | ILoaderRegistryItemData
 
 export interface ILoaderRegistry {
-  add(params: string | string[] | ILoaderRegistryAddData): ILoaderRegistry
+  add(params: LoaderRegistryDataType | LoaderRegistryDataType[]): ILoaderRegistry
   remove(alias: string): ILoaderRegistryItem | ILoaderRegistryItem[] | void
   list(): string[]
   readonly length: number
   get(alias: string): ILoaderRegistryItem | null
+  info(alias: string): string
   getAll(alias: string): ILoaderRegistryItem[] | []
   getIndexByAlias(alias: string): number
   update(alias: string, data: ILoaderRegistryItemUpdateData): void

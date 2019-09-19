@@ -5,11 +5,28 @@ import { basename } from 'path'
 import { parse as UrlParse } from 'url'
 import uuid from 'uuid/v1'
 
+/**
+ * @hidden
+ */
+const getFilenameFromURL = (url: string): string => {
+  let { pathname } = UrlParse(url)
+  if (isNil(pathname)) {
+    console.warn(
+      '[UrlParser]',
+      `${url} failed parse basename`
+    )
+    return 'undefined'
+  }
+  return basename(pathname)
+}
+
 class LoaderRegistryItem implements ILoaderRegistryItem {
   private _id: string
   private _name: string
   private _version: string | null
   private _url: string
+  private _filename: string = 'undefined'
+  private _type: string = 'undefined'
 
   constructor(data: string | ILoaderRegistryItemData) {
     data = castLoaderRegistryItemData(data)
@@ -28,15 +45,7 @@ class LoaderRegistryItem implements ILoaderRegistryItem {
   }
   set name(value: string) {
     if (!value.length) {
-      let { pathname } = UrlParse(this.url)
-      if (isNil(pathname)) {
-        console.warn(
-          '[LoaderRegistryItem]',
-          `${this.url} failed parse basename`
-        )
-        pathname = 'undefined'
-      }
-      value = basename(pathname)
+      value = this.filename
     }
     this._name = value
   }
@@ -62,7 +71,17 @@ class LoaderRegistryItem implements ILoaderRegistryItem {
     if (isNil(value) || !value.length) {
       throw new Error('undefiend registry url')
     }
+    const file = getFilenameFromURL(value).split('.')
+    if (file.length) {
+      this._type = file.pop() as string
+    }
+    this._filename = file.join('.')
     this._url = value
+  }
+  get filename(): string { return this._filename }
+  get type(): string { return this._type }
+  public toString = (): string => {
+    return `${this.alias}: ${this.url}`
   }
 }
 

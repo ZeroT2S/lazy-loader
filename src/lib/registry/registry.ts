@@ -2,11 +2,11 @@ import {
   ILoaderRegistry,
   ILoaderRegistryItemUpdateData,
   ILoaderRegistryItem,
-  ILoaderRegistryAddData
+  ILoaderRegistryItemData,
+  LoaderRegistryDataType,
 } from './interface'
 import { LoaderRegistryItem } from './item'
 import {
-  find,
   findIndex,
   keys,
   has,
@@ -14,7 +14,8 @@ import {
   isNil,
   castArray,
   remove,
-  includes
+  includes,
+  lastIndexOf
 } from '../shared/lodash'
 import { EventEmitter } from 'events'
 
@@ -28,7 +29,7 @@ import { EventEmitter } from 'events'
 
 class LoaderRegistry extends EventEmitter implements ILoaderRegistry {
   private _list: ILoaderRegistryItem[]
-  constructor(params?: string | string[] | ILoaderRegistryAddData) {
+  constructor(params?: LoaderRegistryDataType | LoaderRegistryDataType[]) {
     super()
     const self = this
     this._list = []
@@ -40,9 +41,9 @@ class LoaderRegistry extends EventEmitter implements ILoaderRegistry {
   get length(): number {
     return this._list.length
   }
-  add(params: string | string[] | ILoaderRegistryAddData) {
+  add(params: LoaderRegistryDataType | LoaderRegistryDataType[]) {
     const self = this
-    castArray(params).forEach(data => {
+    castArray(params).forEach((data: string | ILoaderRegistryItemData) => {
       const item = new LoaderRegistryItem(data)
       self._list.push(item)
     })
@@ -54,12 +55,18 @@ class LoaderRegistry extends EventEmitter implements ILoaderRegistry {
     return this._list[ndx]
   }
   info(alias: string): string {
-    return JSON.stringify(this.get(alias))
+    let res: any = this.getAll(alias).map(item => item.toString())
+    if (res.length === 1) res = res[0]
+    return JSON.stringify(res, null, 2)
   }
-  getAll(alias: string): ILoaderRegistryItem[] {
-    const res = find(this._list, { alias })
-    if (isNil(res)) return []
-    return castArray(res)
+  getAll(query: string): ILoaderRegistryItem[] {
+    const hasVersion = lastIndexOf(query, '@') > 0
+    return this._list.filter(item => {
+      if (hasVersion) {
+        return item.alias === query
+      }
+      return item.name === query
+    })
   }
   getIndexByAlias(alias: string): number {
     return findIndex(this._list, { alias })
