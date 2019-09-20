@@ -16,18 +16,28 @@ $((): void => {
       {
         name: 'font-awesome',
         url: 'https://kit.fontawesome.com/21c0a510fd.js',
-        version: '5',
+        version: 5,
         target: 'head'
       },
+      {
+        name: 'swal2',
+        version: 8,
+        url: 'https://cdn.jsdelivr.net/npm/sweetalert2@8',
+        type: 'js',
+        test: () => window['Swal'] != null
+      }
     ],
     ready: function() {
       console.log('registry list:', this.registry.list())
     }
   }).on('loaded', (evt: ILoaderEvent) => {
-    const { name, target } = evt
-    console.log(`[${name}]`, target.alias)
+    const { type, target } = evt
+    console.log(`* LazyLoderEvent.${type}:`, target.alias)
   // }).load('font-awesome@solid')
-  }).load('font-awesome@5')
+  }).load([
+    'font-awesome@5',
+    'swal2@8'
+  ])
 
   console.log('* LazyLoader:', `v${loader.version}`)
   console.log(loader.registry.info('font-awesome@5'))

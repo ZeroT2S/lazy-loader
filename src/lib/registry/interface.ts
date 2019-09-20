@@ -7,8 +7,9 @@ export interface ILoaderRegistryItemUpdateData {
   name?: string
   version?: string | null
   url?: string
-  test?: Function
+  test?: Function | null
   target?: string
+  type?: string
 }
 
 export interface ILoaderRegistryItemData extends ILoaderRegistryItemUpdateData {
@@ -23,6 +24,7 @@ export interface ILoaderRegistryItemRawData {
   alias: string
   type: string
   target: string
+  test: Function | null
 }
 
 export interface ILoaderRegistryItem {
@@ -31,9 +33,10 @@ export interface ILoaderRegistryItem {
   name: string
   version: string | null
   target: string
+  type: string
+  test(): boolean
   readonly alias: string
-  readonly type: string
-  readonly filename: string
+  readonly basename: string
   readonly jsonData: ILoaderRegistryItemRawData
   readonly hasVersion: boolean
 }

@@ -6,10 +6,9 @@ export interface IAppendElementData {
   target?: string
 }
 
-export function documentReady(callback: (evt?: Event) => void): void {
+export function documentReady(callback: (evt?: Event) => void): any {
   if (document.readyState !== 'loading') {
-    callback()
-    return
+    return callback()
   }
   document.addEventListener('DOMContentLoaded', callback);
 }
@@ -58,16 +57,18 @@ function checkDuplicate(data: IAppendElementData): boolean {
   return false
 }
 
-export function appendCss(data: IAppendElementData): void {
-  if (checkDuplicate(data)) return
+export function appendCss(data: IAppendElementData): boolean {
+  if (checkDuplicate(data)) return false
   const el = createLinkElement(data)
   const target = get(data, 'target', 'head')
   document[target].appendChild(el)
+  return true
 }
 
-export function appendJs(data: IAppendElementData): void {
-  if (checkDuplicate(data)) return
+export function appendJs(data: IAppendElementData): boolean {
+  if (checkDuplicate(data)) return false
   const el = createScriptElement(data)
   const target = get(data, 'target', 'body')
   document[target].appendChild(el)
+  return true
 }

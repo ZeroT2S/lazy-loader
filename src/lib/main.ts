@@ -13,11 +13,12 @@ import {
 import {
   ILazyLoaderOptions,
   ILazyLoaderStatic,
-  LazyLoaderStatus
+  LazyLoaderStatus,
+  LazyLoaderEvent,
 } from './interface'
 import {
   get, set, isNil, castArray, isString,
-  find
+  find, assignIn
 } from './shared/lodash'
 import {
   documentReady,
@@ -25,9 +26,8 @@ import {
   appendCss,
 } from './shared/dom-utils'
 
-// document.addEventListener("DOMContentLoaded", function(event) {
-//   //do work
-// });
+const LOADED_TEST_RETRY_MAX_COUNT = 10
+const LOADED_TEST_RETRY_INTERVAL = 200
 
 /**
  * LazyLoader Main Class
@@ -36,9 +36,15 @@ class LazyLoader extends EventEmitter implements ILazyLoaderStatic {
   private _status: LazyLoaderStatus = LazyLoaderStatus.PENDING
   private _ready: boolean = false
   private _jobs: ILoaderRegistryItem[]
+  private _RETRY_MAX_COUNT: number
+  private _RETRY_INTERVAL_TIME: number
+  private _debugMode: boolean
   registry: ILoaderRegistry
   constructor(options?: ILazyLoaderOptions) {
     super()
+    this._RETRY_MAX_COUNT = get(options, 'test.retryCount', LOADED_TEST_RETRY_MAX_COUNT)
+    this._RETRY_INTERVAL_TIME = get(options, 'test.intervalTime', LOADED_TEST_RETRY_INTERVAL)
+    this._debugMode = get(options, 'debug', false)
     const regOption = get(options, 'registry')
     this.registry = new LoaderRegistry(regOption)
     this._jobs = []
@@ -54,6 +60,7 @@ class LazyLoader extends EventEmitter implements ILazyLoaderStatic {
     });
     return this
   }
+  get debug(): boolean { return this._debugMode }
   get version(): string { return APP_VERSION }
   /**
    * @desc
@@ -72,9 +79,7 @@ class LazyLoader extends EventEmitter implements ILazyLoaderStatic {
     if (this.existsJob(item)) return
     this._jobs.push(item)
     if (immediatly) {
-      documentReady(() => {
-        this.startJob()
-      })
+      documentReady(() => this.startJob())
     }
   }
   private startJob(): void {
@@ -85,25 +90,60 @@ class LazyLoader extends EventEmitter implements ILazyLoaderStatic {
     let item: ILoaderRegistryItem
     while (this._jobs.length) {
       item = this._jobs.shift() as ILoaderRegistryItem
+      const eventTarget = { target: item }
+      this.emit(LazyLoaderEvent.LOAD, eventTarget)
       const { id, url, target, type } = item.jsonData
       const elData = { id, url, target }
+      let isAppendSuccess: boolean = false
       switch (type) {
         case 'css':
-          appendCss(elData)
+          isAppendSuccess = appendCss(elData)
           break
         case 'js':
-          appendJs(elData)
+          isAppendSuccess = appendJs(elData)
           break
         default:
           // nothing
       }
+      if (!isAppendSuccess) {
+        this.emit(LazyLoaderEvent.LOAD_REJECT, eventTarget)
+        continue
+      }
+      console.log(item.alias, 111111)
+      const INTERVAL_TIME = this._RETRY_INTERVAL_TIME
+      new Promise((resolve, reject) => {
+        let nCount = 1
+        const testInterval = setInterval(() => {
+          if (nCount > this._RETRY_MAX_COUNT) {
+            return reject()
+          }
+          if (item.test()) {
+            clearInterval(testInterval)
+            return resolve()
+          }
+          if (this.debug) {
+            console.warn(`"${item.alias}" is delayed (${nCount * INTERVAL_TIME}ms)`,)
+          }
+          nCount += 1
+        }, INTERVAL_TIME)
+      }).then(() => {
+        this.emit(LazyLoaderEvent.LOADED, eventTarget)
+      }).catch(() => {
+        this.emit(LazyLoaderEvent.LOAD_ERROR, eventTarget)
+      })
     }
     this._status = LazyLoaderStatus.IDLE
   }
   private existsJob(item: ILoaderRegistryItem): boolean {
-    const t = find(this._jobs, { id: item.id })
-    return !isNil(t)
+    const target = find(this._jobs, { id: item.id })
+    return !isNil(target)
   }
+
+  // @override
+  public emit(event: string | symbol, ...args: any[]): boolean {
+    return super.emit(event, assignIn({ type: event }, ...args))
+  }
+
   load(params?: LoaderRegistryDataType|LoaderRegistryDataType[]): ILazyLoaderStatic {
     castArray(params).forEach(data => {
       let item: ILoaderRegistryItem|null

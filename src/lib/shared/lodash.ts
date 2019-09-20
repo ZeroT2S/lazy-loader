@@ -15,6 +15,7 @@ import has from 'lodash/has'
 import remove from 'lodash/remove'
 import includes from 'lodash/includes'
 import last from 'lodash/last'
+import assignIn from 'lodash/assignIn'
 
 export {
   get,
@@ -33,5 +34,6 @@ export {
   has,
   remove,
   includes,
-  last
+  last,
+  assignIn
 }

@@ -4,14 +4,22 @@ import {
   LoaderRegistryDataType
 } from './registry'
 
+export interface ILazyLoaderTestOptions {
+  retryCount?: number
+  intervalTime?: number
+}
+
 export interface ILazyLoaderOptions {
   registry?: LoaderRegistryDataType[]
   ready?: Function
   load?: LoaderRegistryDataType|LoaderRegistryDataType[]
+  test?: ILazyLoaderTestOptions
+  debug?: boolean
 }
 
 export enum LazyLoaderEvent {
   LOAD = 'load',
+  LOAD_REJECT = 'load-reject',
   LOAD_ERROR = 'load-error',
   LOADED = 'loaded',
   CREATE = 'create',
@@ -25,7 +33,7 @@ export enum LazyLoaderEvent {
 }
 
 export interface ILoaderEvent {
-  name: LazyLoaderEvent
+  type: LazyLoaderEvent
   target: ILoaderRegistryItem
   data?: any
 }

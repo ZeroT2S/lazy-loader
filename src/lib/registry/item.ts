@@ -24,30 +24,46 @@ const getFilenameFromURL = (url: string): string => {
   return basename(pathname)
 }
 
-const UNDEFINED = 'undefined'
-
 class LoaderRegistryItem implements ILoaderRegistryItem {
   private _id: string
   private _name: string
   private _version: string | null
   private _url: string
-  private _filename: string = UNDEFINED
-  private _type: string = UNDEFINED
+  private _basename: string
+  private _loadedValidator: Function | null
+  type: string
   target: string
 
   constructor(data: string | ILoaderRegistryItemData) {
     data = castLoaderRegistryItemData(data)
     this.url = get(data, 'url')
-    this.name = get(data, 'name', this.filename)
-    if (!this.name.length || this.name === UNDEFINED) {
+
+    // name
+    this.name = get(data, 'name', this.basename)
+    if (isNil(this.name ) || !this.name.length) {
       throw new Error(`invalid url or required name property: ${this.url}`)
     }
+
+    // version
     this.version = get(data, 'version', null)
+
+    // test callback
+    this._loadedValidator = get(data, 'test', null)
+
+    //  type
+    let type = get(data, 'type', this.type)
+    if (isNil(type)) {
+      throw new Error(`invalid url or required type property: ${this.url}`)
+    }
+
+    // target
     let target = get(data, 'target')
     if (isNil(target)) {
       target = (this.type === 'css') ? 'head' : 'body'
     }
     this.target = target
+
+    // id
     this._id = uuid()
     return this
   }
@@ -76,6 +92,7 @@ class LoaderRegistryItem implements ILoaderRegistryItem {
     }
     return this.name
   }
+  get basename(): string { return this._basename }
   get url(): string {
     return this._url
   }
@@ -85,11 +102,18 @@ class LoaderRegistryItem implements ILoaderRegistryItem {
     }
     const file = getFilenameFromURL(value).split('.')
     if (file.length) {
-      this._type = file.pop() as string
+      this.type = file.pop() as string
+      this._basename = file.join('.')
     }
-    this._filename = file.join('.')
     this._url = value
   }
+
+  test(): boolean {
+    const validator = this._loadedValidator
+    if (isNil(validator)) return true
+    return validator.call(window)
+  }
+
   get jsonData(): ILoaderRegistryItemRawData {
     return {
       id: this.id,
@@ -99,10 +123,9 @@ class LoaderRegistryItem implements ILoaderRegistryItem {
       alias: this.alias,
       type: this.type,
       target: this.target,
+      test: this._loadedValidator
     }
   }
-  get filename(): string { return this._filename }
-  get type(): string { return this._type }
   public toString = (): string => {
     return `${this.alias}: ${this.url}`
   }
