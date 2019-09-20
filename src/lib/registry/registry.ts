@@ -6,6 +6,7 @@ import {
   LoaderRegistryDataType,
 } from './interface'
 import { LoaderRegistryItem } from './item'
+import { generateVersion } from './utils'
 import {
   findIndex,
   keys,
@@ -18,14 +19,6 @@ import {
   lastIndexOf
 } from '../shared/lodash'
 import { EventEmitter } from 'events'
-
-// constructor: (param?: ILoaderRegistryItem|ILoaderRegistryItem[]) => this
-// add: (param: ILoaderRegistryItem|ILoaderRegistryItem[]) => this
-// remove: (key: string) => boolean
-// list: () => string[]
-// readonly length: number
-// getItem: (key: string) => ILoaderRegistryItem
-// setItem: (key: string, value: ILoaderRegistryItem) => void
 
 class LoaderRegistry extends EventEmitter implements ILoaderRegistry {
   private _list: ILoaderRegistryItem[]
@@ -41,13 +34,35 @@ class LoaderRegistry extends EventEmitter implements ILoaderRegistry {
   get length(): number {
     return this._list.length
   }
-  add(params: LoaderRegistryDataType | LoaderRegistryDataType[]) {
+  add(params: LoaderRegistryDataType | LoaderRegistryDataType[]): ILoaderRegistryItem|ILoaderRegistryItem[]|null {
     const self = this
+    const res: ILoaderRegistryItem[] = []
     castArray(params).forEach((data: string | ILoaderRegistryItemData) => {
-      const item = new LoaderRegistryItem(data)
+      let item;
+      try {
+        item = new LoaderRegistryItem(data)
+      } catch (err) {
+        console.warn(err)
+        return
+      }
+      const { alias, url } = item.jsonData
+      if (this.exists(alias)) {
+        const tItem = this.get(alias) as LoaderRegistryItem
+        if (tItem.url === url) {
+          console.warn(`ignore duplicate script "${alias}"`)
+          return
+        }
+        item.version = generateVersion(item)
+      }
+      res.push(item)
       self._list.push(item)
     })
-    return this
+    if (!res.length) return null
+    if (res.length === 1) return res[0]
+    return res
+  }
+  exists(alias: string): boolean {
+    return !isNil(this.get(alias))
   }
   get(alias: string): ILoaderRegistryItem | null {
     const ndx = this.getIndexByAlias(alias)

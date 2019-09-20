@@ -1,6 +1,9 @@
 // tslint:disable:no-expression-statement
 import get from 'lodash/get'
-import { ILazyLoaderStatic } from './lib'
+import {
+  ILazyLoaderStatic,
+  ILoaderEvent
+} from './lib/interface'
 
 import './assets/styles.scss'
 
@@ -12,32 +15,20 @@ $((): void => {
     registry: [
       {
         name: 'font-awesome',
-        url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css',
-        version: 'all'
-      },
-      {
-        name: 'font-awesome',
-        url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/brands.min.css',
-        version: 'brands'
-      },
-      {
-        name: 'font-awesome',
-        url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/regular.min.css',
-        version: 'regular'
-      },
-      {
-        name: 'font-awesome',
-        url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/solid.min.css',
-        version: 'solid'
+        url: 'https://kit.fontawesome.com/21c0a510fd.js',
+        version: '5',
+        target: 'head'
       },
     ],
     ready: function() {
       console.log('registry list:', this.registry.list())
     }
-  }).on('loaded', () => {
-    console.log('************loaded')
-  }).load(123)
+  }).on('loaded', (evt: ILoaderEvent) => {
+    const { name, target } = evt
+    console.log(`[${name}]`, target.alias)
+  // }).load('font-awesome@solid')
+  }).load('font-awesome@5')
 
   console.log('* LazyLoader:', `v${loader.version}`)
-  console.log(loader.registry.info('font-awesome@all'))
+  console.log(loader.registry.info('font-awesome@5'))
 })

@@ -3,6 +3,8 @@ import set from 'lodash/set'
 import unset from 'lodash/unset'
 import isNil from 'lodash/isNil'
 import isString from 'lodash/isString'
+import isNumber from 'lodash/isNumber'
+import toNumber from 'lodash/toNumber'
 import find from 'lodash/find'
 import findIndex from 'lodash/findIndex'
 import isArray from 'lodash/isArray'
@@ -12,6 +14,7 @@ import keys from 'lodash/keys'
 import has from 'lodash/has'
 import remove from 'lodash/remove'
 import includes from 'lodash/includes'
+import last from 'lodash/last'
 
 export {
   get,
@@ -19,13 +22,16 @@ export {
   unset,
   isNil,
   isString,
+  isArray,
+  isNumber,
+  toNumber,
   find,
   findIndex,
-  isArray,
   castArray,
   lastIndexOf,
   keys,
   has,
   remove,
-  includes
+  includes,
+  last
 }

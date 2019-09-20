@@ -1,5 +1,6 @@
 import {
   ILoaderRegistry,
+  ILoaderRegistryItem,
   LoaderRegistryDataType
 } from './registry'
 
@@ -23,11 +24,17 @@ export enum LazyLoaderEvent {
   UNLOADED = 'unloaded'
 }
 
+export interface ILoaderEvent {
+  name: LazyLoaderEvent
+  target: ILoaderRegistryItem
+  data?: any
+}
+
 export enum LazyLoaderStatus {
   IDLE,
-  LOAD,
+  PENDING,
+  STARTED,
   LOADING,
-  LOADED
 }
 
 export interface ILazyLoaderStatic {
