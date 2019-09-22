@@ -50,9 +50,9 @@ class LoaderRegistryItem implements ILoaderRegistryItem {
     // test callback
     this._loadedValidator = get(data, 'test', null)
 
-    //  type
-    let type = get(data, 'type', this.type)
-    if (isNil(type)) {
+    // type
+    this.type = get(data, 'type', this.type)
+    if (isNil(this.type)) {
       throw new Error(`invalid url or required type property: ${this.url}`)
     }
 
@@ -100,10 +100,13 @@ class LoaderRegistryItem implements ILoaderRegistryItem {
     if (isNil(value) || !value.length) {
       throw new Error('undefiend registry url')
     }
-    const file = getFilenameFromURL(value).split('.')
-    if (file.length) {
+    const basename = getFilenameFromURL(value)
+    const file = basename.split('.')
+    if (file.length > 1) {
       this.type = file.pop() as string
       this._basename = file.join('.')
+    } else {
+      this._basename = basename
     }
     this._url = value
   }

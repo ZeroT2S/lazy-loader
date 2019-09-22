@@ -4,7 +4,7 @@
     "filename": "lazy-loader",
     "global": "LazyLoader"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Dynamically lazy loading javascript or stylesheets",
   "main": "index.js",
   "typings": "index.d.ts",

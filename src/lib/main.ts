@@ -42,8 +42,8 @@ class LazyLoader extends EventEmitter implements ILazyLoaderStatic {
   registry: ILoaderRegistry
   constructor(options?: ILazyLoaderOptions) {
     super()
-    this._RETRY_MAX_COUNT = get(options, 'test.retryCount', LOADED_TEST_RETRY_MAX_COUNT)
-    this._RETRY_INTERVAL_TIME = get(options, 'test.intervalTime', LOADED_TEST_RETRY_INTERVAL)
+    this._RETRY_MAX_COUNT = get(options, 'retry.maxCount', LOADED_TEST_RETRY_MAX_COUNT)
+    this._RETRY_INTERVAL_TIME = get(options, 'retry.intervalTime', LOADED_TEST_RETRY_INTERVAL)
     this._debugMode = get(options, 'debug', false)
     const regOption = get(options, 'registry')
     this.registry = new LoaderRegistry(regOption)
@@ -94,23 +94,31 @@ class LazyLoader extends EventEmitter implements ILazyLoaderStatic {
       this.emit(LazyLoaderEvent.LOAD, eventTarget)
       const { id, url, target, type } = item.jsonData
       const elData = { id, url, target }
-      let isAppendSuccess: boolean = false
+      let isSuccess: boolean = false
+      let errMsg = null
       switch (type) {
         case 'css':
-          isAppendSuccess = appendCss(elData)
+          isSuccess = appendCss(elData)
           break
         case 'js':
-          isAppendSuccess = appendJs(elData)
+          isSuccess = appendJs(elData)
           break
         default:
           // nothing
+          errMsg = `[${item.alias}] not supported import type: ${type}`
       }
-      if (!isAppendSuccess) {
-        this.emit(LazyLoaderEvent.LOAD_REJECT, eventTarget)
+      if (isNil(errMsg) && !isSuccess) {
+        errMsg = `[${item.alias}] failed to create element in document`
+      }
+      if (!isNil(errMsg)) {
+        this.emit(LazyLoaderEvent.LOAD_REJECT, assignIn(eventTarget, { message: errMsg }))
+        if (this.debug) {
+          console.warn(errMsg)
+        }
         continue
       }
-      console.log(item.alias, 111111)
       const INTERVAL_TIME = this._RETRY_INTERVAL_TIME
+
       new Promise((resolve, reject) => {
         let nCount = 1
         const testInterval = setInterval(() => {
