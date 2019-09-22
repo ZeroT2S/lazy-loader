@@ -58,27 +58,6 @@ API Document: <https://zerot2s.github.io/lazy-loader/>
 
 ## todo
 
-* function
-  * loader instnace
-    * [ ] create options
-    * [ ] set/get config
-  * [ ] load
-  * [ ] reload
-  * [ ] unload
-  * events(on)
-    * [ ] loaded
-    * [ ] unloaded
-  * imported library custom api
-    * [ ] create
-    * instance
-      * [ ] length
-      * [ ] get
-      * [ ] getIndexById
-      * [ ] getIdByIndex
-      * [ ] getList
-      * [ ] removeById
-      * [ ] removeByIndex
-      * [ ] removeAll
 * git integration
   * [ ] Codacy
   * [ ] CircleCI

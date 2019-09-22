@@ -12,6 +12,10 @@ $((): void => {
   console.log('* jquery loaded:', `v${$.fn.jquery}`)
   const LazyLoader = get(window, 'LazyLoader')
   const loader: ILazyLoaderStatic = new LazyLoader({
+    debug: true,
+    retry: {
+      intervalTime: 100
+    },
     registry: [
       {
         name: 'font-awesome',
@@ -33,6 +37,12 @@ $((): void => {
   }).on('loaded', (evt: ILoaderEvent) => {
     const { type, target } = evt
     console.log(`* LazyLoderEvent.${type}:`, target.alias)
+    switch (target.alias) {
+      case 'swal2@8':
+        const swal = window['Swal']
+        swal.fire('awesome library!')
+        break
+    }
   // }).load('font-awesome@solid')
   }).load([
     'font-awesome@5',

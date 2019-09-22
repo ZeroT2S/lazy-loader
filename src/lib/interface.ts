@@ -5,7 +5,7 @@ import {
 } from './registry'
 
 export interface ILazyLoaderTestOptions {
-  retryCount?: number
+  maxCount?: number
   intervalTime?: number
 }
 
@@ -13,7 +13,7 @@ export interface ILazyLoaderOptions {
   registry?: LoaderRegistryDataType[]
   ready?: Function
   load?: LoaderRegistryDataType|LoaderRegistryDataType[]
-  test?: ILazyLoaderTestOptions
+  retry?: ILazyLoaderTestOptions
   debug?: boolean
 }
 
@@ -36,6 +36,7 @@ export interface ILoaderEvent {
   type: LazyLoaderEvent
   target: ILoaderRegistryItem
   data?: any
+  message?: string
 }
 
 export enum LazyLoaderStatus {
